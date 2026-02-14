@@ -63,7 +63,8 @@ class LoteController extends Controller
         $lote->autorizacion_entrada = $request->autorizacion_entrada;
         $lote->save();
 
-        return response()->json($lote);
+        return redirect()->route('materiaprima.control', ['tab' => 'entradas'])
+                     ->with('success', 'Estado actualizado');
     }
 
 
@@ -87,6 +88,16 @@ class LoteController extends Controller
         $lotes = Lote::orderBy('created_at', 'desc')->get();
 
         return view('materiaprima.telas.control', compact('lotes', 'tab'));
+    }
+
+    //Eliminar Lote
+
+    public function destroy($id)
+    {
+        $lote = \App\Models\Lote::findOrFail($id);
+        $lote->delete();
+
+        return back()->with('success', 'Lote eliminado correctamente');
     }
 
 

@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoteController;
+use App\Http\Controllers\TelasAlmacenController;
+use App\Http\Controllers\MovimientoMaquilaController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -30,11 +33,20 @@ Route::prefix('materiaprima')->group(function () {
 
     Route::patch('/lotes/{lote}/ubicacion', 
         [LoteController::class, 'cambiarUbicacion']);
+
+    Route::delete('/lotes/{lote}', 
+    [LoteController::class, 'destroy']
+    )->name('lotes.destroy');
+
+    Route::post('/maquila/enviar', 
+    [MovimientoMaquilaController::class, 'enviarLotes']
+    )->name('maquila.enviar');
+
 });
 
 
 //tabla de MovimientosdeMaquila
-use App\Http\Controllers\MovimientoMaquilaController;
+
 
 Route::prefix('materiaprima')->group(function () {
 
@@ -50,8 +62,21 @@ Route::prefix('materiaprima')->group(function () {
         [MovimientoMaquilaController::class, 'registrarLlegada']
     );
 
-    Route::post('/materiaprima/lotes', [LoteController::class, 'store'])
+    Route::post('/lotes', [LoteController::class, 'store'])
     ->name('lotes.store');
+
+    //actualizar estado de autorizacion de entradas
+
+    Route::patch('/lotes/{lote}/autorizacion',
+    [LoteController::class, 'cambiarAutorizacion']
+    )->name('lotes.cambiarAutorizacion');
+
+    //Vista Gestion de Almacen
+    Route::get('/telas/almacen',
+    [TelasAlmacenController::class, 'index']
+    )->name('materiaprima.telas.almacen');
+
+
 
 
 });

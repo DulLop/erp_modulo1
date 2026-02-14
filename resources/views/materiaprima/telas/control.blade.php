@@ -9,7 +9,7 @@
     </h1>
 
     {{-- MENÚ DE PESTAÑAS --}}
-    <nav class="flex space-x-8">
+<nav class="border-b border-b-gray-300 flex space-x-8">
 
     {{-- ENTRADAS --}}
     <a href="{{ route('materiaprima.control', ['tab' => 'entradas']) }}"
@@ -37,9 +37,6 @@
 
 </nav>
 
-
-
-
     {{-- CONTENIDO DE LA PESTAÑA --}}
     <div class="bg-white rounded shadow p-6">
         @if($tab === 'entradas')
@@ -53,7 +50,7 @@
             @include('materiaprima.telas.partials._form_entradasaplanta')
 
             @if($lotes->count() > 0)
-                @include('materiaprima.telas.partials._tabla_lotes')
+                @include('materiaprima.telas.partials._tabla_lotes', ['modo' => 'control'])
             @endif
 
         @endif

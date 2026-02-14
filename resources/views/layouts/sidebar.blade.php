@@ -22,12 +22,15 @@
 
                 <div class="ml-4 mt-2 space-y-1 text-sm">
 
-                    <a href="#" class="block p-2 rounded hover:bg-gray-700">
-                        Control de Entradas y Salidas
+                    <a href="{{ route('materiaprima.control', ['tab' => 'entradas']) }}"
+                        class="block p-2 rounded
+                        {{ request()->routeIs('materiaprima.control') ? 'bg-gray-700' : 'hover:bg-gray-700' }}">
+                            Control de Entradas y Salidas
                     </a>
 
-                    <a href="#" class="block p-2 rounded hover:bg-gray-700">
-                        Gestión de Almacén
+                    <a href="{{ route('materiaprima.telas.almacen') }}"
+                        class="block p-2 rounded hover:bg-gray-700">
+                            Gestión de Almacén
                     </a>
 
                 </div>
