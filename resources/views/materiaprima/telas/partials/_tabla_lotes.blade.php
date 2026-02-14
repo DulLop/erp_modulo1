@@ -33,7 +33,10 @@
                         <td class="p-3">{{ $lote->created_at->format('d/m/Y') }}</td>
 
                         <td class="p-3">
-                            <select class="border bg-yellow-100 rounded px-2 py-1 text-sm text-yellow-500">
+                            <select
+                                class="js-autorizacion-select border rounded px-2 py-1 text-sm"
+                                data-lote-id="{{ $lote->id }}"
+                            >
                                 <option value="pendiente" 
                                     {{ $lote->autorizacion_entrada == 'pendiente' ? 'selected' : '' }}>
                                     Pendiente
@@ -66,3 +69,69 @@
     
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const estados = {
+        pendiente: {
+            claseBg: 'bg-yellow-100',
+            claseTexto: 'text-yellow-600',
+        },
+        autorizado: {
+            claseBg: 'bg-green-100',
+            claseTexto: 'text-green-700',
+        },
+        declinado: {
+            claseBg: 'bg-red-100',
+            claseTexto: 'text-red-700',
+        },
+    };
+
+    const actualizarEstilo = (select, estado) => {
+        Object.values(estados).forEach(({ claseBg, claseTexto }) => {
+            select.classList.remove(claseBg, claseTexto);
+        });
+
+        const clasesEstado = estados[estado] ?? estados.pendiente;
+        select.classList.add(clasesEstado.claseBg, clasesEstado.claseTexto);
+    };
+
+    document.querySelectorAll('.js-autorizacion-select').forEach((select) => {
+        actualizarEstilo(select, select.value);
+
+        select.addEventListener('change', async (event) => {
+            const nuevoEstado = event.target.value;
+            const estadoPrevio = event.target.dataset.estadoPrevio ?? 'pendiente';
+            const loteId = event.target.dataset.loteId;
+
+            event.target.disabled = true;
+
+            try {
+                const respuesta = await fetch(`/materiaprima/lotes/${loteId}/autorizacion`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    },
+                    body: JSON.stringify({ autorizacion_entrada: nuevoEstado }),
+                });
+
+                if (!respuesta.ok) {
+                    throw new Error('No se pudo guardar el cambio de autorización.');
+                }
+
+                event.target.dataset.estadoPrevio = nuevoEstado;
+                actualizarEstilo(event.target, nuevoEstado);
+            } catch (error) {
+                event.target.value = estadoPrevio;
+                actualizarEstilo(event.target, estadoPrevio);
+                alert(error.message);
+            } finally {
+                event.target.disabled = false;
+            }
+        });
+
+        select.dataset.estadoPrevio = select.value;
+    });
+});
+</script>
